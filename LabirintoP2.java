@@ -6,10 +6,9 @@ import java.util.LinkedList;
 
 
 public class LabirintoP2 {
-	private int x;
-	private int y;
-	private int passos;
-	private boolean visitado = false;
+	private final int x;
+	private final int y;
+	private final int passos;
 	public static void main(String[] args) {
 		
 		String[] vetor = new String[201];
@@ -32,9 +31,7 @@ public class LabirintoP2 {
 		}
 
 		String[] vetorAux = new String[vetor.length]; // criei outro input para trabalhar no BFS, para encontrar o numero de passos que o DFS precisa estar limitado
-		for (int i = 0; i < vetor.length; i++) {
-    		vetorAux[i] = vetor[i];
-		}		
+            System.arraycopy(vetor, 0, vetorAux, 0, vetor.length);		
 
 		LinkedList<LabirintoP2> fila = new LinkedList();
 		fila.add(new LabirintoP2(0, 0, 0));
@@ -79,10 +76,10 @@ public class LabirintoP2 {
         		System.out.println(linha); // para demonstrar no terminalo o caminho
     		}
 
-		if(caminho(vetor, a, b+1,passos-1) == true){return true;}
-		if(caminho(vetor, a+1, b,passos-1) == true){return true;} // base do DFS, caminho que o metodo passa
-		if(caminho(vetor, a, b-1,passos-1) == true){return true;}
-		if(caminho(vetor, a-1, b,passos-1) == true){return true;}
+		if(caminho(vetor, a, b+1,passos-1)){return true;}
+		if(caminho(vetor, a+1, b,passos-1)){return true;} // base do DFS, caminho que o metodo passa
+		if(caminho(vetor, a, b-1,passos-1)){return true;}
+		if(caminho(vetor, a-1, b,passos-1)){return true;}
 
 		sb.setCharAt(a, '.');	// retira o X e coloca . em caminhos que foram passados mas não chega em lugar nenhum
     	vetor[b] = sb.toString(); 

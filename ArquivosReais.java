@@ -1,8 +1,7 @@
-import java.util.Scanner;
 
-public class ArquivosReais {
+public class ArquivosReais { // precisa acabar
 	public static void main(String[] args) {
-		Scanner sc1 = new Scanner(System.in);
+		
 	}
 	public static boolean aprova(String codigos){
 		return codigos.length() >= 9;
