@@ -51,11 +51,11 @@ public class LabirintoP3 {
 			sb.setCharAt(dois, 'X');
         	vetorAux[um] = sb.toString();
 			
-			for(String linha : vetorAux){System.out.println(linha);}
-			System.out.println(atual.getAndado());
+			//for(String linha : vetorAux){System.out.println(linha);}
+			
 		}
 		caminho(vetor,fila.poll());
-		
+	
 	}
 	public static int[] returnF(String[] input){
 		int tam = input.length, tamo = input[0].length();
