@@ -1,95 +1,93 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Scanner;
+import java.util.Set;
 
 public class OJogoDosGatos2 {
     public static void main(String[] args) {
-        ArrayList<Integer>  deck1 = new ArrayList<>();
-        ArrayList<Integer>  deck2 = new ArrayList<>();
-		ArrayList<ArrayList<Integer>> input = new ArrayList<>(2);
+        LinkedList<Integer>  deck1 = new LinkedList<>(); // Os dois deck como input.
+        LinkedList<Integer>  deck2 = new LinkedList<>();
+		LinkedList<LinkedList<Integer>> input = new LinkedList<>();// Para auxiliar na hora de ler o arquivo
 		input.add(deck1);
 		input.add(deck2);
-		int a = 0;
+		int linha = 0;
 
 		try{ // leitor do arquivo
-			File arquivo = new File("input-gatos2.txt");
+			File arquivo = new File("input-gatos.txt");
 			Scanner sc1 = new Scanner(arquivo);
 			while(sc1.hasNextLine()){
 				String word = sc1.nextLine();
 				
 				if(word.isEmpty()){
-					a = 1;
+					linha = 1;
 					continue;
 				}
 
 				int num = Integer.parseInt(word);
-			    input.get(a).add(num);
+			    input.get(linha).add(num);
 			}
 		}
 		catch(FileNotFoundException e){
 			System.out.println("Este arquivo não existe!");
 		}
-		cartas(deck1,deck2);
-		
-		ArrayList<Integer> deck;
-		
-		if(deck1.isEmpty()) deck = deck2;
-			else deck= deck1;
-		
+
+		LinkedList<Integer> deck;
+
+		String player = "";
+		if(cartas(deck1,deck2)) {	// Chama o método
+			player = "Jogador nº 1";
+			deck = deck1;
+		} else {
+			player = "Jogador nº 2";
+			deck = deck2;
+		}
+
 		int pontos = 0;
-		
-		for (int i = deck.size(), j = 0; i > 0; i--,j++) pontos += i*deck.get(j);
-		
-		System.out.println("Pontuando: "+pontos+" pontos");
-		
+
+		for (int i = deck.size(); i > 0; i--) pontos += i*deck.removeFirst(); // Calcula os pontos
+
+		System.out.println(" "+player+" Ganhou! \n Pontuando: "+pontos+" pontos!");
+
     }
-    public static boolean cartas(ArrayList<Integer> deck1, ArrayList<Integer> deck2){
-        return cartas(deck1, deck2,true);
-    }
-	public static boolean cartas(ArrayList<Integer> deck1, ArrayList<Integer> deck2, boolean maior){
-		
-        if(deck1.isEmpty() || deck2.isEmpty()){
-            return true;
-        }
+	
+	public static boolean cartas(LinkedList<Integer> deck1, LinkedList<Integer> deck2){
+		Set<String> uniqueNames = new HashSet<>(); // Utilizado metodo set para saber se a combinação de cartas já foi jogada
 
-
-        maior = deck1.getFirst() > deck2.getFirst();
-        if(deck1.getFirst() < deck1.size() && deck2.getFirst() < deck2.size()){
-            ArrayList<Integer> deck3 = subJogo(deck1,new ArrayList<>(deck1.getFirst()));
-            ArrayList<Integer> deck4 = subJogo(deck2,new ArrayList<>(deck2.getFirst()));
-            if(cartas(deck3, deck4,maior)){
-                if(deck3.isEmpty()){maior = true;}
-                if(deck2.isEmpty()){maior = false;}
-            }
-        }
-
-		int a, b;
-		if(maior){
-			a = deck1.getFirst();
-			b = deck2.getFirst();
-			deck1.add(a);
-			deck1.add(b);
-			deck1.removeFirst();
-			deck2.removeFirst();
-		} 
-			else{
-				a = deck2.getFirst();
-				b = deck1.getFirst();
-				deck2.add(a);
-				deck2.add(b);
-				deck1.removeFirst();
-				deck2.removeFirst();
+        while(!deck1.isEmpty() && !deck2.isEmpty()){ // enquanto os dois decks não estiverem vazios vão continuar o jogo
+			if(uniqueNames.contains(deck1.toString())){ // validação de igualdade a jogadas anteriores	
+				return true;
 			}
-		return cartas(deck1,deck2,maior);
+			uniqueNames.add(deck1.toString()); // se não foi jogada antes adiciona ao set
+
+			boolean maior = deck1.getFirst() > deck2.getFirst(); // se for verdadeiro a primeira carta do deck1 é maior, e falsa vice-versa
+        	if(deck1.getFirst() < deck1.size() && deck2.getFirst() < deck2.size()){
+            	LinkedList<Integer> subDeck1 = subJogo(deck1, deck1.getFirst());
+            	LinkedList<Integer> subDeck2 = subJogo(deck2, deck2.getFirst()); // se a primeira carta dos dois baralhos forem menores 
+																				 //que o total de cartas em suas mãos havera um subjogo
+            	maior = cartas(subDeck1, subDeck2); // criação de subJogos para não haver empates e recursões infinitas
+
+			}
+
+			int a = deck1.removeFirst(), b = deck2.removeFirst();	// remove a primeira e adiciona os dois na ultima posição do ganhador
+			if(maior){
+				deck1.addLast(a);
+				deck1.addLast(b);
+			} 
+				else {
+					deck2.addLast(b);
+					deck2.addLast(a);
+				}
+		}
+		return !deck1.isEmpty(); // se for verdadeiro deck1 ganha e falso deck2 ganha
 	}
-    
-    public static ArrayList<Integer> subJogo(ArrayList<Integer> deck1, ArrayList<Integer> deckC){
-        int tam = deckC.size();
-        for (int i = 1; i < tam; i++) {
-            deckC.add(deck1.get(i));
-        }
-        return deckC;
-    }
+	public static LinkedList<Integer> subJogo(LinkedList<Integer> deck, int fim){ // método para criar subDecks
+		LinkedList<Integer> subDeck = new LinkedList<>();
+		for(int i = 0; i < fim; i++){
+			subDeck.add(deck.get(i+1));
+		}
+		return subDeck;
+	}
 }
 
